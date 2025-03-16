@@ -73,7 +73,6 @@ const sendEmail = async (to,name, subject, resetLink) => {
       <p>We received a request to reset your password. Click the button below to reset it:</p>
       <a href="${resetLink}" class="button">Reset Password</a>
       <p>If you didn't request this, please ignore this email.</p>
-      <p class="footer">© 2024 Rental Room. All rights reserved.</p>
     </div>
   </body>
   </html>
