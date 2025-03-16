@@ -1,6 +1,7 @@
 const User = require("../models/User");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcryptjs");
+const sendEmail = require("../config/email");
 
 // Register User
 exports.register = async (req, res) => {
@@ -44,3 +45,39 @@ exports.changePassword = async (req, res) => {
 
   res.json({ message: "Password changed successfully" });
 };
+
+
+// Forgot Password - Send Reset Link
+exports.forgotPassword = async (req, res) => {
+  const { email } = req.body;
+
+  const user = await User.findOne({ email });
+  if (!user) return res.status(404).json({ message: "User not found" });
+
+  const resetToken = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: "15m" });
+
+  const resetLink = `${process.env.CLIENT_URL}/reset-password/${resetToken}`;
+  await sendEmail(user.email, "Password Reset", `Click here to reset password: ${resetLink}`);
+
+  res.json({ message: "Reset link sent to email" });
+};
+
+// Reset Password - Set New Password
+exports.resetPassword = async (req, res) => {
+  const { token, newPassword } = req.body;
+
+  try {
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const user = await User.findById(decoded.id);
+
+    if (!user) return res.status(404).json({ message: "Invalid or expired token" });
+
+    user.password = newPassword;
+    await user.save();
+
+    res.json({ message: "Password reset successfully" });
+  } catch (error) {
+    res.status(400).json({ message: "Invalid or expired token" });
+  }
+};
+
