@@ -4,13 +4,22 @@ const PropertyRequest = require("../models/PropertyRequest");
 // Create Property
 exports.createProperty = async (req, res) => {
   try {
-    const property = new Property({ ...req.body, createdBy: req.user?.id });
+    const propertyData = {
+      ...req.body,
+      createdBy: req.user?.id,
+      galleryShow: false, // Always false on creation
+      galleryShowBy: null // No approval initially
+    };
+
+    const property = new Property(propertyData);
     await property.save();
+
     res.status(201).json({ message: "Property created successfully", property });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 };
+
 
 // Get All Properties
 exports.getProperties = async (req, res) => {
