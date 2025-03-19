@@ -112,7 +112,7 @@ exports.markPropertySold = async (req, res) => {
     const property = await Property.findById(req.params.id);
     if (!property) return res.status(404).json({ message: "Property not found" });
 
-    property.status = "rented";
+    property.status = "Sold";
     await property.save();
 
     res.status(200).json({ message: "Property marked as sold", property });
