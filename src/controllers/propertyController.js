@@ -107,3 +107,114 @@ exports.markPropertySold = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
+
+const PropertyRequest = require("../models/PropertyRequest");
+
+// Buyer Request for Property
+exports.requestProperty = async (req, res) => {
+  try {
+    const { pid } = req.params;
+
+    // Check if request already exists
+    const existingRequest = await PropertyRequest.findOne({ property: pid, buyer: req.user._id });
+    if (existingRequest) {
+      return res.status(400).json({ message: "You have already requested to buy this property" });
+    }
+
+    const propertyRequest = new PropertyRequest({
+      property: pid,
+      buyer: req.user._id,
+    });
+
+    await propertyRequest.save();
+    res.status(201).json({ message: "Property request submitted", propertyRequest });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+// Get Buyer Requests for a Property (Owner Access)
+exports.getPropertyRequests = async (req, res) => {
+  try {
+    const { pid } = req.params;
+
+    const property = await Property.findById(pid);
+    if (!property) return res.status(404).json({ message: "Property not found" });
+
+    if (property.createdBy.toString() !== req.user._id.toString()) {
+      return res.status(403).json({ message: "You can only view requests for your properties" });
+    }
+
+    const requests = await PropertyRequest.find({ property: pid })
+      .populate("buyer", "name email")
+      .populate("property", "name location");
+
+    res.status(200).json(requests);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+// Approve Buy Request (Owner Access)
+exports.approvePropertyRequest = async (req, res) => {
+  try {
+    const { requestId } = req.params;
+
+    const request = await PropertyRequest.findById(requestId).populate("property");
+    if (!request) return res.status(404).json({ message: "Request not found" });
+
+    if (request.property.createdBy.toString() !== req.user._id.toString()) {
+      return res.status(403).json({ message: "You can only approve requests for your properties" });
+    }
+
+    request.status = "approved";
+    await request.save();
+
+    res.status(200).json({ message: "Property request approved", request });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+// Reject Buy Request (Owner Access)
+exports.rejectPropertyRequest = async (req, res) => {
+  try {
+    const { requestId } = req.params;
+
+    const request = await PropertyRequest.findById(requestId).populate("property");
+    if (!request) return res.status(404).json({ message: "Request not found" });
+
+    if (request.property.createdBy.toString() !== req.user._id.toString()) {
+      return res.status(403).json({ message: "You can only reject requests for your properties" });
+    }
+
+    request.status = "rejected";
+    await request.save();
+
+    res.status(200).json({ message: "Property request rejected", request });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+// Search Properties by Text Query
+exports.searchProperties = async (req, res) => {
+  try {
+    const { query } = req.query;
+    if (!query) {
+      return res.status(400).json({ message: "Search query is required" });
+    }
+
+    const properties = await Property.find({
+      $or: [
+        { name: { $regex: query, $options: "i" } },
+        { location: { $regex: query, $options: "i" } },
+        { description: { $regex: query, $options: "i" } },
+      ],
+    });
+
+    res.status(200).json(properties);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
