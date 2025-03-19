@@ -1,4 +1,5 @@
 const Property = require("../models/Property");
+const PropertyRequest = require("../models/PropertyRequest");
 
 // Create Property
 exports.createProperty = async (req, res) => {
@@ -107,8 +108,6 @@ exports.markPropertySold = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
-
-const PropertyRequest = require("../models/PropertyRequest");
 
 // Buyer Request for Property
 exports.requestProperty = async (req, res) => {
