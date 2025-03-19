@@ -93,6 +93,9 @@ exports.approveGallery = async (req, res) => {
     const property = await Property.findById(req.params.id);
     if (!property) return res.status(404).json({ message: "Property not found" });
 
+    // Property alredy approved
+    if (property.galleryShow) return res.status(400).json({ message: "Property is already approved" });
+
     property.galleryShow = true;
     property.galleryShowBy = req.user.id;
     await property.save();
