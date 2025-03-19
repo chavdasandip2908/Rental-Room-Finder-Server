@@ -4,7 +4,7 @@ const PropertyRequest = require("../models/PropertyRequest");
 // Create Property
 exports.createProperty = async (req, res) => {
   try {
-    const property = new Property({ ...req.body, createdBy: req.user._id });
+    const property = new Property({ ...req.body, createdBy: req.user?.id });
     await property.save();
     res.status(201).json({ message: "Property created successfully", property });
   } catch (error) {
