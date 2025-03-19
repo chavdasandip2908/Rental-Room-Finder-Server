@@ -13,12 +13,15 @@ const propertySchema = new mongoose.Schema({
   area: { type: Number, required: true },
   bedrooms: { type: Number, required: true },
   bathrooms: { type: Number, required: true },
-  image: { type: String, required: true },
+  images: { type: [String], required: true },
+  galleryShow: { type: Boolean, default: false }, // Default: hidden
+  galleryShowBy: { type: mongoose.Schema.Types.ObjectId, ref: "User", default: null }, // Master admin who approves
   owner: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
   propertyType: { type: String, required: true },
   status: { type: String, enum: ["Available", "Sold", "Pending"], default: "Available" },
   createdBy: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
-  createdAt: { type: Date, default: Date.now }
+  createdAt: { type: Date, default: Date.now },
+
 });
 
 module.exports = mongoose.model("Property", propertySchema);
