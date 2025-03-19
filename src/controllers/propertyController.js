@@ -39,7 +39,7 @@ exports.updateProperty = async (req, res) => {
     const property = await Property.findById(req.params.id);
     if (!property) return res.status(404).json({ message: "Property not found" });
 
-    if (property.createdBy.toString() !== req.user._id.toString()) {
+    if (property.createdBy.toString() !== req.user.id.toString()) {
       return res.status(403).json({ message: "You can only update your own properties" });
     }
 
@@ -57,7 +57,7 @@ exports.deleteProperty = async (req, res) => {
     const property = await Property.findById(req.params.id);
     if (!property) return res.status(404).json({ message: "Property not found" });
 
-    if (property.createdBy.toString() !== req.user._id.toString()) {
+    if (property.createdBy.toString() !== req.user.id.toString()) {
       return res.status(403).json({ message: "You can only delete your own properties" });
     }
 
@@ -85,7 +85,7 @@ exports.approveGallery = async (req, res) => {
     if (!property) return res.status(404).json({ message: "Property not found" });
 
     property.galleryShow = true;
-    property.galleryShowBy = req.user._id;
+    property.galleryShowBy = req.user.id;
     await property.save();
 
     res.status(200).json({ message: "Property approved for gallery", property });
@@ -115,14 +115,14 @@ exports.requestProperty = async (req, res) => {
     const { pid } = req.params;
 
     // Check if request already exists
-    const existingRequest = await PropertyRequest.findOne({ property: pid, buyer: req.user._id });
+    const existingRequest = await PropertyRequest.findOne({ property: pid, buyer: req.user.id });
     if (existingRequest) {
       return res.status(400).json({ message: "You have already requested to buy this property" });
     }
 
     const propertyRequest = new PropertyRequest({
       property: pid,
-      buyer: req.user._id,
+      buyer: req.user.id,
     });
 
     await propertyRequest.save();
@@ -140,7 +140,7 @@ exports.getPropertyRequests = async (req, res) => {
     const property = await Property.findById(pid);
     if (!property) return res.status(404).json({ message: "Property not found" });
 
-    if (property.createdBy.toString() !== req.user._id.toString()) {
+    if (property.createdBy.toString() !== req.user.id.toString()) {
       return res.status(403).json({ message: "You can only view requests for your properties" });
     }
 
@@ -162,7 +162,7 @@ exports.approvePropertyRequest = async (req, res) => {
     const request = await PropertyRequest.findById(requestId).populate("property");
     if (!request) return res.status(404).json({ message: "Request not found" });
 
-    if (request.property.createdBy.toString() !== req.user._id.toString()) {
+    if (request.property.createdBy.toString() !== req.user.id.toString()) {
       return res.status(403).json({ message: "You can only approve requests for your properties" });
     }
 
@@ -183,7 +183,7 @@ exports.rejectPropertyRequest = async (req, res) => {
     const request = await PropertyRequest.findById(requestId).populate("property");
     if (!request) return res.status(404).json({ message: "Request not found" });
 
-    if (request.property.createdBy.toString() !== req.user._id.toString()) {
+    if (request.property.createdBy.toString() !== req.user.id.toString()) {
       return res.status(403).json({ message: "You can only reject requests for your properties" });
     }
 
