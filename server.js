@@ -14,6 +14,5 @@ app.use("/api/v1/users", require("./src/routes/userRoutes"));
 app.use("/api/v1/properties", require("./src/routes/propertyRoutes"));
 app.use("/api/v1/blogs", require("./src/routes/blogRoutes"));
 
-
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`Server running on port ${PORT} 🚀`));
