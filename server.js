@@ -12,7 +12,7 @@ connectDB();
 app.use("/api/v1/auth", require("./src/routes/authRoutes"));
 app.use("/api/v1/users", require("./src/routes/userRoutes"));
 app.use("/api/v1/properties", require("./src/routes/propertyRoutes"));
-app.use("/api/blogs", require("./src/routes/blogRoutes"));
+app.use("/api/v1/blogs", require("./src/routes/blogRoutes"));
 
 
 const PORT = process.env.PORT || 5000;
