@@ -78,7 +78,12 @@ exports.resetPassword = async (req, res) => {
     }
 
     const user = await User.findOne({ email });
-    if (!user || user.resetCode !== otp || Date.now() > user.resetCodeExpires) {
+
+    if (!user) {
+      return res.status(404).json({ message: "User not Found" });
+    }
+
+    if (user.resetCode !== otp || Date.now() > user.resetCodeExpires) {
       return res.status(400).json({ message: "Invalid or expired OTP" });
     }
 
