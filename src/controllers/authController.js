@@ -58,6 +58,11 @@ exports.forgotPassword = async (req, res) => {
    // Generate a 6-digit random OTP
    const resetCode = crypto.randomInt(100000, 999999).toString();
 
+    // Store OTP and expiration in user document
+    user.resetCode = resetCode;
+    user.resetCodeExpires = Date.now() + 15 * 60 * 1000; // 15 minutes expiry
+    await user.save();
+
   await sendEmail(user.email, "Password Reset Request ", resetCode);
 
   res.json({ message: "Reset link sent to email" });
