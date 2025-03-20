@@ -54,10 +54,10 @@ exports.forgotPassword = async (req, res) => {
   const user = await User.findOne({ email });
   if (!user) return res.status(404).json({ message: "User not found" });
 
-  const resetToken = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: "15m" });
+   // Generate a 6-digit random OTP
+   const resetCode = crypto.randomInt(100000, 999999).toString();
 
-  const resetLink = `${process.env.CLIENT_URL}/reset-password.html?token=${resetToken}`;
-  await sendEmail(user.email, user.name, "Password Reset Request ", resetLink);
+  await sendEmail(user.email, "Password Reset Request ", resetCode);
 
   res.json({ message: "Reset link sent to email" });
 };
