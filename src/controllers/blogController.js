@@ -13,7 +13,7 @@ exports.createBlog = async (req, res) => {
       title,
       content,
       image: image || "", // Storing Image URL
-      author: req.user._id,
+      author: req.user.id,  
     });
 
     await blog.save();
@@ -63,7 +63,7 @@ exports.updateBlog = async (req, res) => {
     const blog = await Blog.findById(id);
     if (!blog) return res.status(404).json({ message: "Blog not found" });
 
-    if (blog.author.toString() !== req.user._id.toString()) {
+    if (blog.author.toString() !== req.user.id.toString()) {
       return res.status(403).json({ message: "You can only update your own blog" });
     }
 
@@ -86,7 +86,7 @@ exports.deleteBlog = async (req, res) => {
     const blog = await Blog.findById(id);
     if (!blog) return res.status(404).json({ message: "Blog not found" });
 
-    if (blog.author.toString() !== req.user._id.toString()) {
+    if (blog.author.toString() !== req.user.id.toString()) {
       return res.status(403).json({ message: "You can only delete your own blog" });
     }
 
@@ -110,7 +110,7 @@ exports.addFeedback = async (req, res) => {
     const blog = await Blog.findById(id);
     if (!blog) return res.status(404).json({ message: "Blog not found" });
 
-    blog.feedbacks.push({ user: req.user._id, message });
+    blog.feedbacks.push({ user: req.user.id, message });
     await blog.save();
 
     res.status(201).json({ message: "Feedback added successfully", blog });
