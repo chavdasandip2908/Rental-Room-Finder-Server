@@ -48,20 +48,20 @@ exports.changePassword = async (req, res) => {
 };
 
 
-// Forgot Password - Send Reset Link
+// Forgot Password - Send Reset Code
 exports.forgotPassword = async (req, res) => {
   const { email } = req.body;
 
   const user = await User.findOne({ email });
   if (!user) return res.status(404).json({ message: "User not found" });
 
-   // Generate a 6-digit random OTP
-   const resetCode = crypto.randomInt(100000, 999999).toString();
+  // Generate a 6-digit random OTP
+  const resetCode = crypto.randomInt(100000, 999999).toString();
 
-    // Store OTP and expiration in user document
-    user.resetCode = resetCode;
-    user.resetCodeExpires = Date.now() + 15 * 60 * 1000; // 15 minutes expiry
-    await user.save();
+  // Store OTP and expiration in user document
+  user.resetCode = resetCode;
+  user.resetCodeExpires = Date.now() + 15 * 60 * 1000; // 15 minutes expiry
+  await user.save();
 
   await sendEmail(user.email, "Password Reset Request ", resetCode);
 
@@ -71,27 +71,26 @@ exports.forgotPassword = async (req, res) => {
 // Reset Password - Set New Password
 exports.resetPassword = async (req, res) => {
   try {
-    const { token } = req.params;
-    const { newPassword, confirmPassword } = req.body;
+    const { email, otp, newPassword, confirmPassword } = req.body;
 
     if (newPassword !== confirmPassword) {
-        return res.status(400).json({ message: "Passwords do not match" });
+      return res.status(400).json({ message: "Passwords do not match" });
     }
 
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    const user = await User.findById(decoded.id);
-
-    if (!user) {
-        return res.status(404).json({ message: "User not found" });
+    const user = await User.findOne({ email });
+    if (!user || user.resetCode !== otp || Date.now() > user.resetCodeExpires) {
+      return res.status(400).json({ message: "Invalid or expired OTP" });
     }
 
     const hashedPassword = await bcrypt.hash(newPassword, 10);
+    user.resetCode = null; // Remove OTP after use
+    user.resetCodeExpires = null;
     user.password = hashedPassword;
     await user.save();
 
     res.json({ message: "Password reset successfully!" });
-} catch (error) {
+  } catch (error) {
     res.status(400).json({ message: "Invalid or expired token" });
-}
+  }
 };
 
