@@ -21,15 +21,22 @@ exports.createProperty = async (req, res) => {
 };
 
 
-// Get All Properties
+// Get All Properties and also get specific type properties
 exports.getProperties = async (req, res) => {
   try {
-    const properties = await Property.find().populate("createdBy", "name email");
+    const { type } = req.query; 
+
+    // Filter object
+    const filter = type ? { type } : {};
+
+    const properties = await Property.find(filter).populate("createdBy", "name email");
+
     res.status(200).json(properties);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 };
+
 
 // Get Single Property
 exports.getPropertyById = async (req, res) => {
