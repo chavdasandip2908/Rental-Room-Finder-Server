@@ -24,10 +24,10 @@ exports.createProperty = async (req, res) => {
 // Get All Properties and also get specific type properties
 exports.getProperties = async (req, res) => {
   try {
-    const { type } = req.query;
+    const { propertyType } = req.query;
 
     // Filter object
-    const filter = type ? { type } : {};
+    const filter = propertyType ? { propertyType } : {};
 
     const properties = await Property.find(filter).populate("createdBy", "name email");
 
