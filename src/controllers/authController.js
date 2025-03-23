@@ -99,3 +99,21 @@ exports.resetPassword = async (req, res) => {
   }
 };
 
+// token validation 
+exports.validateToken = async (req, res) => {
+  try {
+    const token = req.headers.authorization;
+
+    if (!token) {
+      return res.status(401).json({ message: "No token provided" });
+    }
+
+    const decoded = jwt.verify(token.replace("Bearer ", ""), process.env.JWT_SECRET);
+    res.status(200).json({ valid: true, message: "Token is valid", userId: decoded.id });
+
+  } catch (error) {
+    res.status(401).json({ valid: false, message: "Invalid or expired token" });
+  }
+};
+
+
