@@ -7,6 +7,7 @@ exports.createProperty = async (req, res) => {
     const propertyData = {
       ...req.body,
       createdBy: req.user?.id,
+      owner:req.user?.id,
       galleryShow: false, // Always false on creation
       galleryShowBy: null // No approval initially
     };
