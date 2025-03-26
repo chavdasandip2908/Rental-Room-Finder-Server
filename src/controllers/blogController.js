@@ -13,7 +13,7 @@ exports.createBlog = async (req, res) => {
       title,
       content,
       image: image || "", // Storing Image URL
-      author: req.user.id,  
+      author: req.user.id,
     });
 
     await blog.save();
@@ -28,13 +28,22 @@ exports.getAllBlogs = async (req, res) => {
   try {
     const blogs = await Blog.find()
       .populate("author", "name email")
-      .select("title image createdAt author");
+      .populate("feedbacks.user", "name email")
+      .select("title content photo author feedbacks createdAt") // Select only necessary fields
+      .sort({ createdAt: -1 }) // Sort by newest first
+      .lean(); // Optimize performance by returning plain objects
+
+    if (!blogs.length) {
+      return res.status(404).json({ message: "No blogs found" });
+    }
 
     res.status(200).json(blogs);
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    console.error("Error fetching blogs:", error);
+    res.status(500).json({ message: "Internal server error. Please try again later." });
   }
 };
+
 
 // Get One Blog Full Info
 exports.getBlogById = async (req, res) => {
