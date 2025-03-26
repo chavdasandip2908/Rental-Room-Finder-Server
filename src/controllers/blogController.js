@@ -12,7 +12,7 @@ exports.createBlog = async (req, res) => {
     const blog = new Blog({
       title,
       content,
-      image: image || "", // Storing Image URL
+      photo: photo || "", 
       author: req.user.id,
     });
 
