@@ -177,12 +177,13 @@ exports.getPropertyRequests = async (req, res) => {
 exports.getOwnerPropertyRequests = async (req, res) => {
   try {
     // Find all properties created by this user (owner)
-    const properties = await Property.find({ createdBy: req.user.id }).select("_id name location");
-
+    const properties = await Property.find({ createdBy: req.user.id }).select("_id");
+    
+    
     if (properties.length === 0) {
       return res.status(404).json({ message: "No properties found for this user" });
     }
-
+    
     // Extract all property IDs
     const propertyIds = properties.map((property) => property._id);
 

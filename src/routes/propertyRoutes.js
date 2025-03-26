@@ -29,9 +29,8 @@ router.get("/:id", getPropertyById);
 router.put("/gallery/approve/:id", protect, isAdmin, approveGallery);
 router.put("/sold/:id", protect, markPropertySold);
 router.post("/request/:pid", protect, requestProperty);
-router.get("/requests/:pid", protect, getPropertyRequests);
 router.get("/requests/owner", protect, getOwnerPropertyRequests);
-
+router.get("/requests/:pid", protect, getPropertyRequests);
 router.get("/user/properties", protect, getSpecificUserProperty);
 router.put("/approve-request/:requestId", protect, approvePropertyRequest);
 router.put("/reject-request/:requestId", protect, rejectPropertyRequest);
