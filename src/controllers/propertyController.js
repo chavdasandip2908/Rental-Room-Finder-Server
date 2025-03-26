@@ -178,12 +178,12 @@ exports.getOwnerPropertyRequests = async (req, res) => {
   try {
     // Find all properties created by this user (owner)
     const properties = await Property.find({ createdBy: req.user.id }).select("_id");
-    
-    
+
+
     if (properties.length === 0) {
       return res.status(404).json({ message: "No properties found for this user" });
     }
-    
+
     // Extract all property IDs
     const propertyIds = properties.map((property) => property._id);
 
@@ -197,6 +197,60 @@ exports.getOwnerPropertyRequests = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
+
+//  Get all properties where the  user has sent a Buy Request
+exports.getUserBuyAllProperty = async (req, res) => {
+  try {
+    const userId = req.user.id;
+
+    // Fetch all property requests by the logged-in user
+    const buyRequests = await PropertyRequest.find({ buyer: userId })
+      .populate({
+        path: "property",
+        select: "title images price area owner", // Fetch owner details as well
+        populate: { path: "owner", select: "name email" } // Fetch only name & email of owner
+      })
+      .sort({ createdAt: -1 }); // Sort by latest request
+
+    if (!buyRequests.length) {
+      return res.status(404).json({ message: "No Buy Requests found!" });
+    }
+
+    // Format response with required fields
+    const formattedResponse = buyRequests.map(request => {
+      let statusMessage = "";
+
+      if (request.status === "pending") {
+        statusMessage = "Your request is under review.";
+      } else if (request.status === "rejected") {
+        statusMessage = "Your request was rejected by the owner.";
+      } else if (request.status === "approved" && request.property.owner) {
+        statusMessage = {
+          ownerName: request.property.owner.name,
+          ownerEmail: request.property.owner.email,
+          message: "Your request was approved by the owner."
+        }
+      }
+
+      return {
+        id: request.property._id,
+        title: request.property.title,
+        image: request.property.images.length > 0 ? request.property.images[0] : null, // First image
+        price: request.property.price,
+        size: request.property.area,
+        status: request.status,
+        statusMessage: statusMessage
+      };
+    });
+
+    res.status(200).json(formattedResponse);
+  } catch (error) {
+    console.error("Error fetching buyer requests:", error);
+    res.status(500).json({ message: "Internal Server Error" });
+  }
+};
+
+
 
 // Get Buyer Requests for a Property (Owner Access)
 exports.getSpecificUserProperty = async (req, res) => {
