@@ -190,7 +190,7 @@ exports.getOwnerPropertyRequests = async (req, res) => {
     // Find all requests for these properties
     const requests = await PropertyRequest.find({ property: { $in: propertyIds } })
       .populate("buyer", "name email")
-      .populate("property", "name location");
+      .populate("property", "title");
 
     res.status(200).json(requests);
   } catch (error) {
