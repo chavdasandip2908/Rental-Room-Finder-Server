@@ -7,7 +7,7 @@ exports.createProperty = async (req, res) => {
     const propertyData = {
       ...req.body,
       createdBy: req.user?.id,
-      owner:req.user?.id,
+      owner: req.user?.id,
       galleryShow: false, // Always false on creation
       galleryShowBy: null // No approval initially
     };
@@ -173,6 +173,22 @@ exports.getPropertyRequests = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
+// Get Buyer Requests for a Property (Owner Access)
+exports.getSpecificUserProperty = async (req, res) => {
+  try {
+    const properties = await Property.find({ owner: req.user.id });
+
+    if (!properties.length) {
+      return res.status(404).json({ message: "No properties found for this user." });
+    }
+
+    res.status(200).json(properties);
+  } catch (error) {
+    console.error("Error fetching properties:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
+
 
 // Approve Buy Request (Owner Access)
 exports.approvePropertyRequest = async (req, res) => {
