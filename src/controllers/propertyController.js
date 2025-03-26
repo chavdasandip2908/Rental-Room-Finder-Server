@@ -173,6 +173,30 @@ exports.getPropertyRequests = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
+// get all buy requests for specific owner
+exports.getOwnerPropertyRequests = async (req, res) => {
+  try {
+    // Find all properties created by this user (owner)
+    const properties = await Property.find({ createdBy: req.user.id }).select("_id name location");
+
+    if (properties.length === 0) {
+      return res.status(404).json({ message: "No properties found for this user" });
+    }
+
+    // Extract all property IDs
+    const propertyIds = properties.map((property) => property._id);
+
+    // Find all requests for these properties
+    const requests = await PropertyRequest.find({ property: { $in: propertyIds } })
+      .populate("buyer", "name email")
+      .populate("property", "name location");
+
+    res.status(200).json(requests);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
 // Get Buyer Requests for a Property (Owner Access)
 exports.getSpecificUserProperty = async (req, res) => {
   try {
