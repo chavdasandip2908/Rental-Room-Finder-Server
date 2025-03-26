@@ -3,7 +3,7 @@ const Blog = require("../models/Blog");
 // Create a New Blog
 exports.createBlog = async (req, res) => {
   try {
-    const { title, content, image } = req.body;
+    const { title, content, photo } = req.body;
 
     if (!title || !content) {
       return res.status(400).json({ message: "Title and content are required" });
