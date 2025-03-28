@@ -14,6 +14,7 @@ const propertySchema = new mongoose.Schema({
   bedrooms: { type: Number, required: true },
   bathrooms: { type: Number, required: true },
   images: { type: [String], required: true },
+  amenities: { type: [String], required: true },
   galleryShow: { type: Boolean, default: false }, // Default: hidden
   galleryShowBy: { type: mongoose.Schema.Types.ObjectId, ref: "User", default: null }, // Master admin who approves
   owner: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
