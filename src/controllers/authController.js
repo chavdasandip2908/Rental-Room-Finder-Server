@@ -6,12 +6,12 @@ const sendEmail = require("../config/email");
 
 // Register User
 exports.register = async (req, res) => {
-  const { name, email, password } = req.body;
+  const { name, email, password, role } = req.body;
 
   let user = await User.findOne({ email });
   if (user) return res.status(400).json({ message: "Email already exists" });
 
-  user = new User({ name, email, password });
+  user = new User({ name, email, password, role });
   await user.save();
 
   res.status(201).json({ message: "User registered successfully" });
