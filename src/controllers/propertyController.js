@@ -207,17 +207,19 @@ exports.getUserBuyAllProperty = async (req, res) => {
     const buyRequests = await PropertyRequest.find({ buyer: userId })
       .populate({
         path: "property",
-        select: "title images price area owner", // Fetch owner details as well
-        populate: { path: "owner", select: "name email" } // Fetch only name & email of owner
+        select: "title images price area owner",
+        populate: { path: "owner", select: "name email" }
       })
-      .sort({ createdAt: -1 }); // Sort by latest request
+      .sort({ createdAt: -1 });
 
     if (!buyRequests.length) {
       return res.status(404).json({ message: "No Buy Requests found!" });
     }
+    // **Filter out requests where `property` is null**
+    const validRequests = buyRequests.filter(request => request.property);
 
     // Format response with required fields
-    const formattedResponse = buyRequests.map(request => {
+    const formattedResponse = validRequests.map(request => {
       let statusMessage = "";
 
       if (request.status === "pending") {
@@ -228,20 +230,24 @@ exports.getUserBuyAllProperty = async (req, res) => {
         statusMessage = {
           ownerName: request.property.owner.name,
           ownerEmail: request.property.owner.email,
-          message: "Your request was approved by the owner."
-        }
+          message: "Your request was approved by the owner.",
+        };
       }
 
       return {
         id: request.property._id,
         title: request.property.title,
-        image: request.property.images.length > 0 ? request.property.images[0] : null, // First image
+        image: request.property.images.length > 0 ? request.property.images[0] : null,
         price: request.property.price,
         size: request.property.area,
         status: request.status,
-        statusMessage: statusMessage
+        statusMessage,
       };
     });
+
+    if (!formattedResponse.length) {
+      return res.status(404).json({ message: "No valid Buy Requests found!" });
+    }
 
     res.status(200).json(formattedResponse);
   } catch (error) {
@@ -249,6 +255,7 @@ exports.getUserBuyAllProperty = async (req, res) => {
     res.status(500).json({ message: "Internal Server Error" });
   }
 };
+
 
 
 
