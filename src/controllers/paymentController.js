@@ -1,0 +1,71 @@
+const Razorpay = require("razorpay");
+const crypto = require("crypto");
+const Payment=require("../models/payment")
+
+const RAZORPAY_KEY_ID = "rzp_test_VRgFy3YGWinPS7";
+const RAZORPAY_SECRET = "ForMyqaOr4rl4IPkOOZfBZmX";
+
+const instance = new Razorpay({
+    key_id: RAZORPAY_KEY_ID,
+    key_secret: RAZORPAY_SECRET,
+});
+
+
+exports.property = async(req,res) =>{
+    try {
+        console.log("RP"+ req.body.amount);
+        const options = {
+            amount: req.body.amount * 100,
+            currency: "INR",
+            receipt: crypto.randomBytes(10).toString("hex"),
+        };  
+
+        instance.orders.create(options, (error, orders) => {
+            if (error) {
+                console.log(error);
+                return res.status(500).json({ message: "Something Went Wrong!" });
+            }
+            res.status(200).json({ data: orders });
+        });
+
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({ message: "Internal Server Error!" });
+    }
+}
+
+exports.verify = async(req,res) =>{
+
+    try {
+        const { razorpay_orderID, razorpay_paymentID, razorpay_signature, propertyId } = req.body;
+        const sign = razorpay_orderID + "|" + razorpay_paymentID;
+        const resultSign = crypto
+            .createHmac("sha256", RAZORPAY_SECRET)
+            .update(sign.toString())
+            .digest("hex");
+        console.log(razorpay_signature)
+        console.log(resultSign)
+
+        if (razorpay_signature === resultSign) {
+            const payment = new Payment({
+                payment_id: razorpay_paymentID,
+                property_id: propertyId,
+                payment_date: new Date(),
+                payment_method: "Razorpay",
+                payment_status: "Completed",
+                total_payment: req.body.payment,
+                transaction_Type: "credit"
+            });
+
+            const savedPayment = await payment.save();
+
+            return res.status(200).json({ payment: savedPayment });
+        } else {
+            return res.status(400).json({ message: "Invalid signature" });
+        }
+
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({ message: "Internal Server Error!" });
+    }
+}
