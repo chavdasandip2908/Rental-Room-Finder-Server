@@ -15,7 +15,11 @@ const protect = (req, res, next) => {
 
 const isAdmin = (req, res, next) => {
   if (req.user.role !== "admin") {
+<<<<<<< HEAD
     return res.status(403).json({ message: "Access denied. You are not authorized to perform this action." });
+=======
+    return res.status(403).json({ message: "Access Forbidden!" });
+>>>>>>> 294043b (add payment gatway)
   }
   next();
 };

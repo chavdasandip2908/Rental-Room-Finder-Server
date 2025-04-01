@@ -6,9 +6,13 @@ const UserSchema = new mongoose.Schema(
     name: { type: String, required: true },
     email: { type: String, required: true, unique: true },
     password: { type: String, required: true },
+<<<<<<< HEAD
     role: { type: String, enum: ["seller", "buyer", "admin"], default: "buyer" },
     resetCode: { type: String, default: null }, // OTP Store
     resetCodeExpires: { type: Date, default: null } // OTP Expiration
+=======
+    role: { type: String, enum: ["admin", "user"], default: "user" },
+>>>>>>> 294043b (add payment gatway)
   },
   { timestamps: true }
 );
