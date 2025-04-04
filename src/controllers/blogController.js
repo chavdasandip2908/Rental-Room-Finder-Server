@@ -3,11 +3,7 @@ const Blog = require("../models/Blog");
 // Create a New Blog
 exports.createBlog = async (req, res) => {
   try {
-<<<<<<< HEAD
     const { title, content, photo } = req.body;
-=======
-    const { title, content, image } = req.body;
->>>>>>> 294043b (add payment gatway)
 
     if (!title || !content) {
       return res.status(400).json({ message: "Title and content are required" });
@@ -16,13 +12,8 @@ exports.createBlog = async (req, res) => {
     const blog = new Blog({
       title,
       content,
-<<<<<<< HEAD
       photo: photo || "", 
       author: req.user.id,
-=======
-      image: image || "", // Storing Image URL
-      author: req.user._id,
->>>>>>> 294043b (add payment gatway)
     });
 
     await blog.save();
@@ -37,7 +28,6 @@ exports.getAllBlogs = async (req, res) => {
   try {
     const blogs = await Blog.find()
       .populate("author", "name email")
-<<<<<<< HEAD
       .populate("feedbacks.user", "name email")
       .select("title content photo author feedbacks createdAt") // Select only necessary fields
       .sort({ createdAt: -1 }) // Sort by newest first
@@ -55,16 +45,6 @@ exports.getAllBlogs = async (req, res) => {
 };
 
 
-=======
-      .select("title image createdAt author");
-
-    res.status(200).json(blogs);
-  } catch (error) {
-    res.status(500).json({ message: error.message });
-  }
-};
-
->>>>>>> 294043b (add payment gatway)
 // Get One Blog Full Info
 exports.getBlogById = async (req, res) => {
   try {
@@ -92,11 +72,7 @@ exports.updateBlog = async (req, res) => {
     const blog = await Blog.findById(id);
     if (!blog) return res.status(404).json({ message: "Blog not found" });
 
-<<<<<<< HEAD
     if (blog.author.toString() !== req.user.id.toString()) {
-=======
-    if (blog.author.toString() !== req.user._id.toString()) {
->>>>>>> 294043b (add payment gatway)
       return res.status(403).json({ message: "You can only update your own blog" });
     }
 
@@ -119,11 +95,7 @@ exports.deleteBlog = async (req, res) => {
     const blog = await Blog.findById(id);
     if (!blog) return res.status(404).json({ message: "Blog not found" });
 
-<<<<<<< HEAD
     if (blog.author.toString() !== req.user.id.toString()) {
-=======
-    if (blog.author.toString() !== req.user._id.toString()) {
->>>>>>> 294043b (add payment gatway)
       return res.status(403).json({ message: "You can only delete your own blog" });
     }
 
@@ -147,11 +119,7 @@ exports.addFeedback = async (req, res) => {
     const blog = await Blog.findById(id);
     if (!blog) return res.status(404).json({ message: "Blog not found" });
 
-<<<<<<< HEAD
     blog.feedbacks.push({ user: req.user.id, message });
-=======
-    blog.feedbacks.push({ user: req.user._id, message });
->>>>>>> 294043b (add payment gatway)
     await blog.save();
 
     res.status(201).json({ message: "Feedback added successfully", blog });

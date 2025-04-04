@@ -4,7 +4,6 @@ const PropertyRequest = require("../models/PropertyRequest");
 // Create Property
 exports.createProperty = async (req, res) => {
   try {
-<<<<<<< HEAD
     const propertyData = {
       ...req.body,
       createdBy: req.user?.id,
@@ -15,18 +14,11 @@ exports.createProperty = async (req, res) => {
 
     const property = new Property(propertyData);
     await property.save();
-
-=======
-    const property = new Property({ ...req.body, createdBy: req.user._id });
-    await property.save();
->>>>>>> 294043b (add payment gatway)
     res.status(201).json({ message: "Property created successfully", property });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 };
-
-<<<<<<< HEAD
 
 // Get All Properties and also get specific type properties
 exports.getProperties = async (req, res) => {
@@ -38,22 +30,12 @@ exports.getProperties = async (req, res) => {
 
     const properties = await Property.find(filter).populate("createdBy", "name email");
 
-=======
-// Get All Properties
-exports.getProperties = async (req, res) => {
-  try {
-    const properties = await Property.find().populate("createdBy", "name email");
->>>>>>> 294043b (add payment gatway)
     res.status(200).json(properties);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 };
 
-<<<<<<< HEAD
-
-=======
->>>>>>> 294043b (add payment gatway)
 // Get Single Property
 exports.getPropertyById = async (req, res) => {
   try {
@@ -71,11 +53,7 @@ exports.updateProperty = async (req, res) => {
     const property = await Property.findById(req.params.id);
     if (!property) return res.status(404).json({ message: "Property not found" });
 
-<<<<<<< HEAD
     if (property.createdBy.toString() !== req.user.id.toString()) {
-=======
-    if (property.createdBy.toString() !== req.user._id.toString()) {
->>>>>>> 294043b (add payment gatway)
       return res.status(403).json({ message: "You can only update your own properties" });
     }
 
@@ -93,11 +71,7 @@ exports.deleteProperty = async (req, res) => {
     const property = await Property.findById(req.params.id);
     if (!property) return res.status(404).json({ message: "Property not found" });
 
-<<<<<<< HEAD
     if (property.createdBy.toString() !== req.user.id.toString()) {
-=======
-    if (property.createdBy.toString() !== req.user._id.toString()) {
->>>>>>> 294043b (add payment gatway)
       return res.status(403).json({ message: "You can only delete your own properties" });
     }
 
@@ -124,16 +98,11 @@ exports.approveGallery = async (req, res) => {
     const property = await Property.findById(req.params.id);
     if (!property) return res.status(404).json({ message: "Property not found" });
 
-<<<<<<< HEAD
     // Property alredy approved
     if (property.galleryShow) return res.status(400).json({ message: "Property is already approved" });
 
     property.galleryShow = true;
     property.galleryShowBy = req.user.id;
-=======
-    property.galleryShow = true;
-    property.galleryShowBy = req.user._id;
->>>>>>> 294043b (add payment gatway)
     await property.save();
 
     res.status(200).json({ message: "Property approved for gallery", property });
@@ -148,11 +117,7 @@ exports.markPropertySold = async (req, res) => {
     const property = await Property.findById(req.params.id);
     if (!property) return res.status(404).json({ message: "Property not found" });
 
-<<<<<<< HEAD
     property.status = "Sold";
-=======
-    property.status = "rented";
->>>>>>> 294043b (add payment gatway)
     await property.save();
 
     res.status(200).json({ message: "Property marked as sold", property });
@@ -167,22 +132,14 @@ exports.requestProperty = async (req, res) => {
     const { pid } = req.params;
 
     // Check if request already exists
-<<<<<<< HEAD
     const existingRequest = await PropertyRequest.findOne({ property: pid, buyer: req.user.id });
-=======
-    const existingRequest = await PropertyRequest.findOne({ property: pid, buyer: req.user._id });
->>>>>>> 294043b (add payment gatway)
     if (existingRequest) {
       return res.status(400).json({ message: "You have already requested to buy this property" });
     }
 
     const propertyRequest = new PropertyRequest({
       property: pid,
-<<<<<<< HEAD
       buyer: req.user.id,
-=======
-      buyer: req.user._id,
->>>>>>> 294043b (add payment gatway)
     });
 
     await propertyRequest.save();
@@ -200,11 +157,7 @@ exports.getPropertyRequests = async (req, res) => {
     const property = await Property.findById(pid);
     if (!property) return res.status(404).json({ message: "Property not found" });
 
-<<<<<<< HEAD
     if (property.createdBy.toString() !== req.user.id.toString()) {
-=======
-    if (property.createdBy.toString() !== req.user._id.toString()) {
->>>>>>> 294043b (add payment gatway)
       return res.status(403).json({ message: "You can only view requests for your properties" });
     }
 
@@ -217,7 +170,7 @@ exports.getPropertyRequests = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
-<<<<<<< HEAD
+
 // get all buy requests for specific owner
 exports.getOwnerPropertyRequests = async (req, res) => {
   try {
@@ -320,8 +273,7 @@ exports.getSpecificUserProperty = async (req, res) => {
   }
 };
 
-=======
->>>>>>> 294043b (add payment gatway)
+
 
 // Approve Buy Request (Owner Access)
 exports.approvePropertyRequest = async (req, res) => {
@@ -331,11 +283,7 @@ exports.approvePropertyRequest = async (req, res) => {
     const request = await PropertyRequest.findById(requestId).populate("property");
     if (!request) return res.status(404).json({ message: "Request not found" });
 
-<<<<<<< HEAD
     if (request.property.createdBy.toString() !== req.user.id.toString()) {
-=======
-    if (request.property.createdBy.toString() !== req.user._id.toString()) {
->>>>>>> 294043b (add payment gatway)
       return res.status(403).json({ message: "You can only approve requests for your properties" });
     }
 
@@ -356,11 +304,7 @@ exports.rejectPropertyRequest = async (req, res) => {
     const request = await PropertyRequest.findById(requestId).populate("property");
     if (!request) return res.status(404).json({ message: "Request not found" });
 
-<<<<<<< HEAD
     if (request.property.createdBy.toString() !== req.user.id.toString()) {
-=======
-    if (request.property.createdBy.toString() !== req.user._id.toString()) {
->>>>>>> 294043b (add payment gatway)
       return res.status(403).json({ message: "You can only reject requests for your properties" });
     }
 

@@ -8,16 +8,11 @@ const {
     getGalleryProperties,
     approveGallery,
     markPropertySold,
-<<<<<<< HEAD
     getUserBuyAllProperty,
     requestProperty,
     getPropertyRequests,
     getOwnerPropertyRequests,
     getSpecificUserProperty,
-=======
-    requestProperty,
-    getPropertyRequests,
->>>>>>> 294043b (add payment gatway)
     approvePropertyRequest,
     rejectPropertyRequest,
     searchProperties,
@@ -28,7 +23,6 @@ const router = express.Router();
 
 router.post("/create", protect, createProperty);
 router.get("/", getProperties);
-<<<<<<< HEAD
 router.put("/update/:id", protect, updateProperty);
 router.delete("/delete/:id", protect, deleteProperty);
 router.get("/gallery", getGalleryProperties);
@@ -40,16 +34,6 @@ router.post("/request/:pid", protect, requestProperty);
 router.get("/requests/owner", protect, getOwnerPropertyRequests);
 router.get("/requests/:pid", protect, getPropertyRequests);
 router.get("/user/properties", protect, getSpecificUserProperty);
-=======
-router.get("/:id", getPropertyById);
-router.put("/update/:id", protect, updateProperty);
-router.delete("/delete/:id", protect, deleteProperty);
-router.get("/gallery", getGalleryProperties);
-router.put("/gallery/approve/:id", protect, isAdmin, approveGallery);
-router.put("/sold/:id", protect, markPropertySold);
-router.post("/request/:pid", protect, requestProperty);
-router.get("/requests/:pid", protect, getPropertyRequests);
->>>>>>> 294043b (add payment gatway)
 router.put("/approve-request/:requestId", protect, approvePropertyRequest);
 router.put("/reject-request/:requestId", protect, rejectPropertyRequest);
 router.get("/search/properties", searchProperties);
