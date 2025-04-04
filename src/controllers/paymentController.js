@@ -2,12 +2,9 @@ const Razorpay = require("razorpay");
 const crypto = require("crypto");
 const Payment = require("../models/payment")
 
-const RAZORPAY_KEY_ID = "rzp_test_VRgFy3YGWinPS7";
-const RAZORPAY_SECRET = "ForMyqaOr4rl4IPkOOZfBZmX";
-
 const instance = new Razorpay({
-    key_id: RAZORPAY_KEY_ID,
-    key_secret: RAZORPAY_SECRET,
+    key_id: process.env.RAZORPAY_KEY_ID,
+    key_secret: process.env.RAZORPAY_SECRET,
 });
 
 
@@ -16,19 +13,21 @@ exports.property = async (req, res) => {
         if (!req.body.amount || isNaN(req.body.amount)) {
             return res.status(400).json({ message: "Invalid amount" });
         }
-        
+
         if (req.body.amount > 500000) { // 50,00,000 paise = ₹5,00,000
             return res.status(400).json({ message: "Amount exceeds maximum limit of ₹5,00,000" });
         }
-        
+
         const options = {
             amount: req.body.amount * 100,
             currency: "INR",
             receipt: crypto.randomBytes(10).toString("hex"),
         };
-        
+
+        const user = await User.findById(req.user.id).select("name email"); // User ka data fetch karna
         const order = await instance.orders.create(options);
-        res.status(200).json({ data: order });
+
+        res.status(200).json({ data: order, user: user });
 
     } catch (error) {
         // console.log(error);
