@@ -6,8 +6,21 @@ const connectDB = require("./src/config/db");
 const app = express();
 app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ limit: '50mb', extended: true }));
+
+const allowedOrigins = [
+    "http://127.0.0.1:5500",
+    "https://rental-room-finder.onrender.com"
+];
+
+
 app.use(cors({
-    origin: 'http://127.0.0.1:5500', // Change this to your frontend URL
+    origin: function (origin, callback) {
+        if (!origin || allowedOrigins.includes(origin)) {
+            callback(null, true);
+        } else {
+            callback(new Error("Not allowed by CORS"));
+        }
+    },
     methods: ['GET', 'POST', 'PUT', 'DELETE'],
     allowedHeaders: ['Content-Type', 'Authorization'],
     credentials: true
