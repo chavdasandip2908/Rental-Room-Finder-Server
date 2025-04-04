@@ -51,17 +51,29 @@ exports.getBlogById = async (req, res) => {
     const { id } = req.params;
     const blog = await Blog.findById(id)
       .populate("author", "name email photo")
-      .populate("feedbacks.user", "name email");
+      .populate({
+        path: "feedbacks.user",
+        select: "name email",
+      })
+      .select("title content photo author feedbacks createdAt");
 
     if (!blog) {
       return res.status(404).json({ message: "Blog not found" });
     }
 
-    res.status(200).json(blog);
+    // Transform feedbacks to include `message`
+    const blogData = blog.toObject();
+    blogData.feedbacks = blog.feedbacks.map(feedback => ({
+      user: feedback.user, // Contains name & email
+      message: feedback.message, // Add message field
+    }));
+
+    res.status(200).json(blogData);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 };
+
 
 
 // Update Blog (Only Owner)
