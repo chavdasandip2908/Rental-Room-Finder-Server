@@ -28,7 +28,10 @@ exports.getProperties = async (req, res) => {
     // Filter object
     const filter = propertyType ? { propertyType } : {};
 
-    const properties = await Property.find(filter).populate("createdBy", "name email");
+    const properties = await Property.find({
+      ...filter,
+      status: { $ne: "Sold" } // "Sold" status wali properties exclude karega
+    }).populate("createdBy", "name email");
 
     res.status(200).json(properties);
   } catch (error) {
@@ -326,10 +329,15 @@ exports.searchProperties = async (req, res) => {
     }
 
     const properties = await Property.find({
-      $or: [
-        { name: { $regex: query, $options: "i" } },
-        { location: { $regex: query, $options: "i" } },
-        { description: { $regex: query, $options: "i" } },
+      $and: [
+        { status: { $ne: "Sold" } },
+        {
+          $or: [
+            { name: { $regex: query, $options: "i" } },
+            { location: { $regex: query, $options: "i" } },
+            { description: { $regex: query, $options: "i" } },
+          ],
+        },
       ],
     });
 

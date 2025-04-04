@@ -2,6 +2,7 @@ const Razorpay = require("razorpay");
 const crypto = require("crypto");
 const Payment = require("../models/payment")
 const User = require("../models/User");
+const Property = require("../models/Property");
 
 const instance = new Razorpay({
     key_id: process.env.RAZORPAY_KEY_ID,
@@ -59,6 +60,10 @@ exports.verify = async (req, res) => {
                 total_payment: req.body.payment,
                 transaction_Type: "credit"
             });
+
+            // update property status to "Sold"
+            const property = await Property.findByIdAndUpdate(propertyId, { status: "Sold" }, { new: true });
+
 
             const savedPayment = await payment.save();
 
