@@ -12,7 +12,7 @@ exports.createBlog = async (req, res) => {
     const blog = new Blog({
       title,
       content,
-      photo: photo || "", 
+      photo: photo || "",
       author: req.user.id,
     });
 
@@ -27,11 +27,10 @@ exports.createBlog = async (req, res) => {
 exports.getAllBlogs = async (req, res) => {
   try {
     const blogs = await Blog.find()
-      .populate("author", "name email")
-      .populate("feedbacks.user", "name email")
-      .select("title content photo author feedbacks createdAt") // Select only necessary fields
-      .sort({ createdAt: -1 }) // Sort by newest first
-      .lean(); // Optimize performance by returning plain objects
+      .populate("author", "name")
+      .select("title photo author createdAt")
+      .sort({ createdAt: -1 })
+      .lean();
 
     if (!blogs.length) {
       return res.status(404).json({ message: "No blogs found" });
@@ -45,12 +44,13 @@ exports.getAllBlogs = async (req, res) => {
 };
 
 
+
 // Get One Blog Full Info
 exports.getBlogById = async (req, res) => {
   try {
     const { id } = req.params;
     const blog = await Blog.findById(id)
-      .populate("author", "name email")
+      .populate("author", "name email photo")
       .populate("feedbacks.user", "name email");
 
     if (!blog) {
@@ -62,6 +62,7 @@ exports.getBlogById = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
+
 
 // Update Blog (Only Owner)
 exports.updateBlog = async (req, res) => {
