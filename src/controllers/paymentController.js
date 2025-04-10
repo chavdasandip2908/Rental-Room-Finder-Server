@@ -26,13 +26,23 @@ exports.property = async (req, res) => {
             receipt: crypto.randomBytes(10).toString("hex"),
         };
 
+
+
         const user = await User.findById(req.user.id).select("name email"); // User ka data fetch karna
         const order = await instance.orders.create(options);
+        console.log(order);
 
-        res.status(200).json({ data: order, user: user });
+        res.status(200).json({
+            data: {
+                ...order,
+                key: process.env.RAZORPAY_KEY_ID,
+
+            },
+            user: user
+        });
 
     } catch (error) {
-        // console.log(error);
+        console.log(error);
         res.status(500).json({ message: "Internal Server Error!" });
     }
 };
