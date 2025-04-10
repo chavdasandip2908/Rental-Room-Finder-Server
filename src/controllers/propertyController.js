@@ -205,19 +205,25 @@ exports.getUserBuyAllProperty = async (req, res) => {
     const userId = req.user.id;
 
     // Fetch all property requests by the logged-in user
-    const buyRequests = await PropertyRequest.find({ buyer: userId })
+    const buyRequestsRaw = await PropertyRequest.find({ buyer: userId })
       .populate({
         path: "property",
-        select: "title images price area owner",
-        populate: { path: "owner", select: "name email" }
+        select: "title images price area owner status",
+        populate: {
+          path: "owner",
+          select: "name email"
+        }
       })
       .sort({ createdAt: -1 });
 
-    if (!buyRequests.length) {
+    // ✅ Filter out requests where the property is null or has status "Sold"
+    const validRequests = buyRequestsRaw.filter(
+      (req) => req.property && req.property.status !== "Sold"
+    );
+
+    if (!validRequests.length) {
       return res.status(404).json({ message: "No Buy Requests found!" });
     }
-    // **Filter out requests where `property` is null**
-    const validRequests = buyRequests.filter(request => request.property);
 
     // Format response with required fields
     const formattedResponse = validRequests.map(request => {
@@ -256,9 +262,6 @@ exports.getUserBuyAllProperty = async (req, res) => {
     res.status(500).json({ message: "Internal Server Error" });
   }
 };
-
-
-
 
 // Get Buyer Requests for a Property (Owner Access)
 exports.getSpecificUserProperty = async (req, res) => {
