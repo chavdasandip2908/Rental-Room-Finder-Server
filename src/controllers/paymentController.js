@@ -54,7 +54,7 @@ exports.verify = async (req, res) => {
         const { razorpay_orderID, razorpay_paymentID, razorpay_signature, propertyId } = req.body;
         const sign = razorpay_orderID + "|" + razorpay_paymentID;
         const resultSign = crypto
-            .createHmac("sha256", RAZORPAY_SECRET)
+            .createHmac("sha256", process.env.RAZORPAY_SECRET)
             .update(sign.toString())
             .digest("hex");
         console.log(razorpay_signature)
@@ -73,7 +73,6 @@ exports.verify = async (req, res) => {
 
             // update property status to "Sold"
             const property = await Property.findByIdAndUpdate(propertyId, { status: "Sold" }, { new: true });
-
 
             const savedPayment = await payment.save();
 
