@@ -33,7 +33,7 @@ router.get("/:id", getPropertyById);
 router.get("/gallery", getGalleryProperties);
 router.get("/gallery/requests", protect, isAdmin, getPendingGalleryProperties);
 router.patch("/gallery/request/:id", protect, isSeller, requestGalleryApproval);
-router.put("/gallery/approve/:id", protect, approveGallery);
+router.put("/gallery/approve/:id", protect, isAdmin, approveGallery);
 // buy or sell
 router.get("/buyer/properties", protect, getUserBuyAllProperty);
 router.put("/sold/:id", protect, markPropertySold);
