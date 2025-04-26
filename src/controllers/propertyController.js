@@ -95,6 +95,27 @@ exports.getGalleryProperties = async (req, res) => {
   }
 };
 
+//Seller Request Route
+exports.requestGalleryApproval = async (req, res) => {
+  try {
+    const property = await Property.findById(req.params.id);
+    if (!property) return res.status(404).json({ message: "Property not found" });
+
+    // Check if already requested or shown
+    if (property.galleryRequested) {
+      return res.status(400).json({ message: "Gallery request already sent" });
+    }
+
+    property.galleryRequested = true;
+    await property.save();
+
+    res.status(200).json({ message: "Gallery request sent successfully" });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+
 // Approve Property for Gallery
 exports.approveGallery = async (req, res) => {
   try {
