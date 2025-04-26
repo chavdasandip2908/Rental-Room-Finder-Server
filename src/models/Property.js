@@ -17,6 +17,7 @@ const propertySchema = new mongoose.Schema({
   amenities: { type: [String], required: true },
   galleryShow: { type: Boolean, default: false }, // Default: hidden
   galleryShowBy: { type: mongoose.Schema.Types.ObjectId, ref: "User", default: null }, // Master admin who approves
+  galleryRequested: { type: Boolean, default: false }, 
   owner: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
   propertyType: { type: String, required: true },
   status: { type: String, enum: ["Available", "Sold", "Pending"], default: "Available" },
