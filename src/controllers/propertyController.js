@@ -138,11 +138,14 @@ exports.approveGallery = async (req, res) => {
     // Property alredy approved
     if (property.galleryShow) return res.status(400).json({ message: "Property is already approved" });
 
+    // Approve the property
     property.galleryShow = true;
+    property.galleryRequested = false;
     property.galleryShowBy = req.user.id;
     await property.save();
 
-    res.status(200).json({ message: "Property approved for gallery", property });
+
+    res.status(200).json({ message: "Property approved for gallery" });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
