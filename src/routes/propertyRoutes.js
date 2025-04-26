@@ -23,7 +23,7 @@ const { protect, isAdmin, isSeller } = require("../middlewares/authMiddleware");
 
 const router = express.Router();
 
-// normal 
+// normal CRUD
 router.post("/create", protect, createProperty);
 router.get("/", getProperties);
 router.put("/update/:id", protect, updateProperty);
