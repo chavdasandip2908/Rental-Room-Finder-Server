@@ -27,4 +27,4 @@ const isSeller = (req, res, next) => {
   next();
 };
 
-module.exports = { protect, isAdmin };
+module.exports = { protect, isAdmin, isSeller };
