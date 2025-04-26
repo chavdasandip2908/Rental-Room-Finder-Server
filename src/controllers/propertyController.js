@@ -95,7 +95,7 @@ exports.getGalleryProperties = async (req, res) => {
   }
 };
 
-//Seller Request Route
+// Seller Request Route
 exports.requestGalleryApproval = async (req, res) => {
   try {
     const property = await Property.findById(req.params.id);
@@ -115,6 +115,19 @@ exports.requestGalleryApproval = async (req, res) => {
   }
 };
 
+// Admin Listing for Gallery request Route
+exports.getPendingGalleryProperties = async (req, res) => {
+  try {
+    const properties = await Property.find({
+      galleryShow: false,
+      galleryRequested: true
+    }).populate("owner", "name email").sort({ createdAt: -1 });
+
+    res.status(200).json({ message: "Gallery requested properties", properties });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
 
 // Approve Property for Gallery
 exports.approveGallery = async (req, res) => {
