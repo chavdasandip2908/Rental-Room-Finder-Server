@@ -166,6 +166,30 @@ exports.markPropertySold = async (req, res) => {
   }
 };
 
+// Reject Property Gallery Request
+exports.rejectGalleryRequest = async (req, res) => {
+  try {
+    const property = await Property.findById(req.params.id);
+    if (!property) return res.status(404).json({ message: "Property not found" });
+
+    if (property.galleryShow) {
+      return res.status(400).json({ message: "Property is already approved, cannot reject." });
+    }
+
+    if (!property.galleryRequested) {
+      return res.status(400).json({ message: "No gallery request to reject." });
+    }
+
+    property.galleryRequested = false;
+    await property.save();
+
+    res.status(200).json({ message: "Gallery request rejected successfully", property });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+
 // Buyer Request for Property
 exports.requestProperty = async (req, res) => {
   try {
