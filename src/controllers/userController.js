@@ -7,6 +7,12 @@ exports.getProfile = async (req, res) => {
   res.json(user);
 };
 
+// Get User Profile
+exports.getAllUser = async (req, res) => {
+  const user = await User.find().select("-password");
+  res.json(user);
+};
+
 // Update User
 exports.updateUser = async (req, res) => {
   const { name, email } = req.body;
