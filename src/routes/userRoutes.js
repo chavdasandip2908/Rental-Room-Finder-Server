@@ -3,7 +3,7 @@ const { getProfile, updateUser, deleteUser,getAllUser } = require("../controller
 const { protect, isAdmin } = require("../middlewares/authMiddleware");
 
 const router = express.Router();
-router.get("/", getAllUser);
+router.get("/",protect, getAllUser);
 router.get("/profile", protect, getProfile);
 router.put("/update", protect, updateUser);
 router.delete("/delete/:id", protect, isAdmin, deleteUser);
