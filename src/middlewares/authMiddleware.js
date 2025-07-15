@@ -27,16 +27,16 @@ const isSeller = (req, res, next) => {
   next();
 };
 
-const isSelfOrAdmin = (req, res, next) => {
-  const loggedInUserId = req.user.id; // from protect middleware
-  const targetUserId = req.params.id; // assuming the route has /:id
+// const isSelfOrAdmin = (req, res, next) => {
+//   const loggedInUserId = req.user.id; // from protect middleware
+//   const targetUserId = req.params.id; // assuming the route has /:id
 
-  // Allow if user is admin or accessing their own data
-  if (loggedInUserId === targetUserId || req.user.role === "admin") {
-    return next();
-  }
+//   // Allow if user is admin or accessing their own data
+//   if (loggedInUserId === targetUserId || req.user.role === "admin") {
+//     return next();
+//   }
 
-  return res.status(403).json({ message: "Access denied. You can only access your own data or must be an admin." });
-};
+//   return res.status(403).json({ message: "Access denied. You can only access your own data or must be an admin." });
+// };
 
 module.exports = { protect, isAdmin, isSeller, isSelfOrAdmin };
