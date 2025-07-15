@@ -15,13 +15,14 @@ exports.getAllUser = async (req, res) => {
 
 // Update User
 exports.updateUser = async (req, res) => {
-  const { name, email } = req.body;
+  const { name, email, role } = req.body;
   const user = await User.findById(req.user.id);
 
   if (!user) return res.status(404).json({ message: "User not found" });
 
   user.name = name || user.name;
   user.email = email || user.email;
+  user.role = role || user.role;
 
   await user.save();
   res.json({ message: "Profile Updated", user });
