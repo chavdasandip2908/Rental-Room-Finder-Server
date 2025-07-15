@@ -39,4 +39,4 @@ const isSeller = (req, res, next) => {
 //   return res.status(403).json({ message: "Access denied. You can only access your own data or must be an admin." });
 // };
 
-module.exports = { protect, isAdmin, isSeller, isSelfOrAdmin };
+module.exports = { protect, isAdmin, isSeller };
